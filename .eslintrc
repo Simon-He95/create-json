@@ -2,6 +2,7 @@
   "extends": "@antfu",
   "rules": {
     "no-alert": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "no-dupe-keys": "off"
   }
 }
