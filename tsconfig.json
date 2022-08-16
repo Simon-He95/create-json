@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": ["esnext", "DOM"],
+    "lib": [
+      "esnext",
+      "DOM"
+    ],
+    "experimentalDisableTemplateSupport": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strict": true,
