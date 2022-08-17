@@ -5,6 +5,7 @@
 declare module 'vue' {
   export interface GlobalComponents {
     Counter: typeof import('./src/components/Counter.vue')['default']
+    Drag: typeof import('./src/components/Drag.vue')['default']
     Footer: typeof import('./src/components/Footer.vue')['default']
     Form: typeof import('./src/components/Form.vue')['default']
   }

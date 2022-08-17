@@ -1,9 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{ name: String; data: Record<string, any> }>()
-console.log(props.name)
 watch(props, () => {
   restoreData()
-  console.log(props.name)
 })
 const dialogVisible = ref(false)
 const cardShow = ref(true)
@@ -19,6 +17,7 @@ function choose(e: any) {
   cardType.value = e.target.parentNode.attributes.type.nodeValue
 }
 const input = ref('')
+const placeholder = ref('')
 const activeName = ref('first')
 const tableData = ref<Record<string, any>[]>([])
 const defaultvalue = ref('')
@@ -29,6 +28,9 @@ const max = ref(false)
 const maxvalue = ref(0)
 const required = ref('false')
 const textarea = ref('')
+const errMsg = ref('')
+const description = ref('')
+const key = ref(0)
 interface Icontrollers {
   relevancy: string
   controlType: string
@@ -51,6 +53,9 @@ function confirm() {
   const min = minvalue.value === 0 ? null : minvalue.value
   const max = maxvalue.value === 0 ? null : maxvalue.value
   const data = {
+    id: input.value,
+    placeholder: placeholder.value,
+    description: description.value,
     name: input.value,
     type: cardType.value,
     default: defaultvalue.value || null,
@@ -58,8 +63,10 @@ function confirm() {
     max,
     required: required.value === 'false' ? null : true,
     regExp: regExp.value || null,
-    textarea: t.length ? t : null,
-    rules: r.length ? r : null,
+    options: t.length ? t : null,
+    show: r.length ? r : null,
+    key: ++key.value,
+    position: `0-${key.value - 1}`,
   }
   if (type.value === 'add') { tableData.value = [...tableData.value, data] }
   else {
@@ -77,16 +84,16 @@ function cancel() {
 }
 
 function save() {
-  console.log(transformToJson(tableData.value))
+  console.log(transformToJson())
 }
 
-function transformToJson(data: any[]) {
+function transformToJson() {
   const result = {
     name,
     description: 'xxx',
     attribs: {},
   }
-  data.reduce((result, item) => {
+  tableData.value.reduce((result, item) => {
     const key = item.name
     result[key] = item
     return result
@@ -114,6 +121,9 @@ function editHandler(row: any) {
   cardType.value = row.type
   defaultvalue.value = row.default
   regExp.value = row.regExp
+  errMsg.value = row.errMsg
+  placeholder.value = row.placeholder
+  description.value = row.description
   if (row.min) {
     min.value = true
     minvalue.value = row.min
@@ -135,7 +145,7 @@ function getAllname() {
 function deleteHandler(row: any) {
   tableData.value = tableData.value.filter(item => item.name !== row.name)
 }
-const types = ['Text', 'Email', 'Rich text', 'Date', 'Enumeration', 'Password', 'Number', 'Media', 'Boolean', 'Relation']
+const types = ['Text', 'Email', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Media', 'Boolean', 'Relation']
 function handleClose(done: () => void) {
   resetData()
   done()
@@ -154,11 +164,15 @@ function selectChange() {
 }
 
 function restoreData() {
-  const { attribs } = props.data
-  tableData.value = Object.keys(attribs).map(key => attribs[key])
+  const attribs = props.data.attribs
+  tableData.value = Object.keys(attribs).map(key => attribs?.[key] || {})
 }
 if (props.data)
   restoreData()
+
+defineExpose({
+  transformToJson,
+})
 </script>
 
 <template>
@@ -185,9 +199,17 @@ if (props.data)
         <el-tabs v-model="activeName" class="demo-tabs">
           <el-tab-pane label="Basic settings" name="first">
             <div v-show="cardType">
-              <el-form-item label="Name:" class="w-50%">
-                <el-input v-model="input" placeholder="Please input Name" />
-              </el-form-item>
+              <div flex="~ gap-5">
+                <el-form-item label="Name:" class="w-45%">
+                  <el-input v-model="input" placeholder="Please input Name" />
+                </el-form-item>
+                <el-form-item label="Placeholder:" class="w-45%">
+                  <el-input v-model="placeholder" placeholder="Please input Placeholder" />
+                </el-form-item>
+                <el-form-item label="Description:" class="w-45%">
+                  <el-input v-model="description" placeholder="Please input Description" />
+                </el-form-item>
+              </div>
               <el-input
                 v-show="cardType === 'Enumeration'" v-model="textarea" :rows="5" type="textarea" placeholder="Ex:
 morning
@@ -203,6 +225,9 @@ evening"
               </el-form-item>
               <el-form-item label="RegExp pattern" flex-col items-start class="w-50%">
                 <el-input v-model="regExp" />
+              </el-form-item>
+              <el-form-item label="Error message" flex-col items-start class="w-50%">
+                <el-input v-model="errMsg" />
               </el-form-item>
             </div>
             <div flex="~" flex-col items-start>
@@ -245,7 +270,10 @@ evening"
                     v-model="item.relevancy" placeholder="Select" size="large" clearable
                     @change="selectChange"
                   >
-                    <el-option v-for="i in tableData" :key="i.name" :label="i.name" :value="i.name" />
+                    <el-option
+                      v-for="i in tableData.filter(item => item.name !== input)" :key="i.name" :label="i.name"
+                      :value="i.name"
+                    />
                   </el-select>
                 </el-form-item>
                 <div v-show="item.relevancy" class="w-45%">
