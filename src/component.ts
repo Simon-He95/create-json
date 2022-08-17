@@ -2,7 +2,7 @@
 import type { DefineComponent, VNode } from 'vue'
 import { defineComponent, h, reactive, ref, watch, watchEffect } from 'vue'
 import type { FormRules } from 'element-plus'
-import { ElCascader, ElCheckbox, ElCheckboxButton, ElCheckboxGroup, ElDatePicker, ElForm, ElFormItem, ElInput, ElInputNumber, ElOption, ElRadio, ElRadioButton, ElRadioGroup, ElSelect, ElSwitch } from 'element-plus'
+import { ElCascader, ElCheckbox, ElCheckboxButton, ElCheckboxGroup, ElCol, ElDatePicker, ElForm, ElFormItem, ElInput, ElInputNumber, ElOption, ElRadio, ElRadioButton, ElRadioGroup, ElRow, ElSelect, ElSwitch } from 'element-plus'
 export interface TypeComponent {
   Text: (type?: string) => VNode
   Email: () => VNode
@@ -37,14 +37,18 @@ export const jsonSchemaTransformForm = defineComponent({
   },
   setup(props, { expose }) {
     const schema = ref(props.schema)
-    watch(props, () => schema.value = props.schema)
-
     const model = reactive<Record<string, any>>({})
     const rules = reactive<FormRules>({})
     const formEl = ref<HTMLFormElement>()
     const group1: any[] = []
     const group2: any[] = []
     const group3: any[] = []
+    watch(props, () => {
+      group1.length = 0
+      group2.length = 0
+      group3.length = 0
+      schema.value = props.schema
+    })
     expose({
       getFormData: () => model,
       submit: () => new Promise((resolve) => {
@@ -68,11 +72,6 @@ export const jsonSchemaTransformForm = defineComponent({
           model,
           rules,
           size: props.schema.size,
-          style: {
-            'display': 'grid',
-            'grid-template-columns': '1fr 1fr 1fr',
-            'column-gap': '1rem',
-          },
           class: props.schema.class,
         }, { default: () => wrapper(renderForm(props.schema.attribs)) })])
       : ''
@@ -195,15 +194,12 @@ export const jsonSchemaTransformForm = defineComponent({
           prop: key,
           required: !!required,
           class: `json_${type + _key}`,
-          style: {
-            'grid-column': 3,
-          },
         }, {
           default: () => [h('div', {
             class: ' w-full text-1 lh-4 text-gray-600:50 mb-1',
           }, description), typeComponent[type as keyof TypeComponent]()],
         })
-        console.log(position)
+
         if (position.startsWith('0-'))
           group1.push(formItem)
         else if (position.startsWith('1-'))
@@ -219,6 +215,8 @@ export const jsonSchemaTransformForm = defineComponent({
         }
         function judgeShow() {
           const el = document.querySelector(`.json_${type + _key}`)! as HTMLElement
+          if (!el)
+            return
           if (!show)
             return el.style.display = 'block'
           for (let i = 0; i < show?.length; i++) {
@@ -243,8 +241,24 @@ export const jsonSchemaTransformForm = defineComponent({
       return formList
     }
     function wrapper(data) {
-      console.log(data)
-      data.filter(item => item.position)
+      // const result = []
+      // let pointer = 0
+      // const max = Math.max(group1.length, group2.length, group3.length)
+      // for (let i = 0; i < max; i++) {
+      //   const level = (group1[pointer] ? 1 : 0) + (group2[pointer] ? 1 : 0) + (group3[pointer] ? 1 : 0)
+      //   const g1 = group1[pointer]
+      //   const g2 = group2[pointer]
+      //   const g3 = group3[pointer]
+      //   const colData: any[] = []
+      //   g1 && colData.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g1 }))
+      //   g2 && colData.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g2 }))
+      //   g3 && colData.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g3 }))
+      //   result.push(h(ElRow, { gutter: 20 }, {
+      //     default: () => colData
+      //   }))
+      //   pointer++
+      // }
+      // console.log(group1, group2, group3)
       return data
     }
   },

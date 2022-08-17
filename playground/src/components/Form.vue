@@ -26,7 +26,7 @@ const min = ref(false)
 const minvalue = ref(0)
 const max = ref(false)
 const maxvalue = ref(0)
-const required = ref('false')
+const required = ref(false)
 const textarea = ref('')
 const errMsg = ref('')
 const description = ref('')
@@ -61,7 +61,7 @@ function confirm() {
     default: defaultvalue.value || null,
     min,
     max,
-    required: required.value === 'false' ? null : true,
+    required: required.value,
     regExp: regExp.value || null,
     options: t.length ? t : null,
     show: r.length ? r : null,
@@ -106,7 +106,7 @@ function resetData() {
   input.value = ''
   min.value = false
   max.value = false
-  required.value = ''
+  required.value = false
   minvalue.value = 0
   maxvalue.value = 0
   defaultvalue.value = ''
@@ -164,7 +164,7 @@ function selectChange() {
 }
 
 function restoreData() {
-  const attribs = props.data.attribs
+  const attribs = props.data.attribs || (props.data.attribs = {})
   tableData.value = Object.keys(attribs).map(key => attribs?.[key] || {})
 }
 if (props.data)
