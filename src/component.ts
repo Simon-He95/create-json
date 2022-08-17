@@ -40,13 +40,7 @@ export const jsonSchemaTransformForm = defineComponent({
     const model = reactive<Record<string, any>>({})
     const rules = reactive<FormRules>({})
     const formEl = ref<HTMLFormElement>()
-    const group1: any[] = []
-    const group2: any[] = []
-    const group3: any[] = []
     watch(props, () => {
-      group1.length = 0
-      group2.length = 0
-      group3.length = 0
       schema.value = props.schema
     })
     expose({
@@ -194,18 +188,13 @@ export const jsonSchemaTransformForm = defineComponent({
           prop: key,
           required: !!required,
           class: `json_${type + _key}`,
+          position,
         }, {
           default: () => [h('div', {
             class: ' w-full text-1 lh-4 text-gray-600:50 mb-1',
           }, description), typeComponent[type as keyof TypeComponent]()],
         })
 
-        if (position.startsWith('0-'))
-          group1.push(formItem)
-        else if (position.startsWith('1-'))
-          group2.push(formItem)
-        else
-          group3.push(formItem)
         formList.push(formItem)
         if (children)
           formList.push(...renderForm(children))
@@ -240,26 +229,28 @@ export const jsonSchemaTransformForm = defineComponent({
       }
       return formList
     }
-    function wrapper(data) {
-      // const result = []
-      // let pointer = 0
-      // const max = Math.max(group1.length, group2.length, group3.length)
-      // for (let i = 0; i < max; i++) {
-      //   const level = (group1[pointer] ? 1 : 0) + (group2[pointer] ? 1 : 0) + (group3[pointer] ? 1 : 0)
-      //   const g1 = group1[pointer]
-      //   const g2 = group2[pointer]
-      //   const g3 = group3[pointer]
-      //   const colData: any[] = []
-      //   g1 && colData.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g1 }))
-      //   g2 && colData.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g2 }))
-      //   g3 && colData.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g3 }))
-      //   result.push(h(ElRow, { gutter: 20 }, {
-      //     default: () => colData
-      //   }))
-      //   pointer++
-      // }
-      // console.log(group1, group2, group3)
-      return data
+    function wrapper(data: any[]) {
+      const g1 = data.filter((item: any) => item.props.position.startsWith('0-')).sort(sortIndex)
+      const g2 = data.filter((item: any) => item.props.position.startsWith('1-')).sort(sortIndex)
+      const g3 = data.filter((item: any) => item.props.position.startsWith('2-')).sort(sortIndex)
+      const max = Math.max(g1.length, g2.length, g3.length)
+      const result = []
+      for (let i = 0; i < max; i++) {
+        const col: any[] = []
+        const level = (g1[i] ? 1 : 0) + (g2[i] ? 1 : 0) + (g3[i] ? 1 : 0)
+        g1[i] && col.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g1[i] }))
+        g2[i] && col.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g2[i] }))
+        g3[i] && col.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g3[i] }))
+        result.push(h(ElRow, { gutter: 10 }, {
+          default: () => col,
+        }))
+      }
+      return result
+      function sortIndex(a: any, b: any) {
+        if (!b)
+          return -1
+        return a.props.position.split('-')[1] - b.props.position.split('-')[1]
+      }
     }
   },
 }) as DefineComponent<{ schema: Schema }, {}, { getFormData: () => Record<string, any>; submit: () => Promise<boolean | Record<string, any>> }>

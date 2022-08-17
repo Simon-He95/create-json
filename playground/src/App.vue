@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const data = ref<Record<string, any>>({
+  attribs: {},
   description: 'xxx',
   name: '123',
 })

@@ -164,7 +164,7 @@ function selectChange() {
 }
 
 function restoreData() {
-  const attribs = props.data.attribs || (props.data.attribs = {})
+  const attribs = props.data.attribs
   tableData.value = Object.keys(attribs).map(key => attribs?.[key] || {})
 }
 if (props.data)
