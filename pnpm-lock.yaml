@@ -16,7 +16,7 @@ importers:
       mavon-editor: 3.0.0-beta
       pkgroll: ^1.3.1
       quill: ^1.3.7
-      simon-js-tool: ^4.0.30
+      simon-js-tool: ^4.0.31
       typescript: ^4.7.2
       vite: ^3.0.2
       vitest: ^0.13.1
@@ -37,7 +37,7 @@ importers:
       mavon-editor: 3.0.0-beta
       pkgroll: 1.3.1_typescript@4.7.2
       quill: 1.3.7
-      simon-js-tool: 4.0.30
+      simon-js-tool: 4.0.31
       typescript: 4.7.2
       vite: 3.0.2
       vitest: 0.13.1
@@ -4503,8 +4503,8 @@ packages:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
     dev: true
 
-  /simon-js-tool/4.0.30:
-    resolution: {integrity: sha512-qpf9CYrXZ5nF2p7WwXO32ODSnripnmLOdTAoQBIexm2KxefOQbpzV1Em8yWP8tAZ+vCjBGy6nbgSGnu9pv7Wgg==}
+  /simon-js-tool/4.0.31:
+    resolution: {integrity: sha512-TTGx53jkh3oWrQscuqJ9MYbUZcFTGHz6TTRN4gN0VKxvHPO2CjAc9ucyOGHma2pdqu04dh7r08mAkLpusv9olQ==}
     dependencies:
       '@vueuse/core': 8.9.4_vue@3.2.36
       htmlparser2: 8.0.1

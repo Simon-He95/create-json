@@ -3,6 +3,8 @@ import type { DefineComponent, VNode } from 'vue'
 import { defineComponent, h, reactive, ref, watch, watchEffect } from 'vue'
 import type { FormRules } from 'element-plus'
 import { ElCascader, ElCheckbox, ElCheckboxButton, ElCheckboxGroup, ElCol, ElDatePicker, ElForm, ElFormItem, ElInput, ElInputNumber, ElOption, ElRadio, ElRadioButton, ElRadioGroup, ElRow, ElSelect, ElSwitch } from 'element-plus'
+import { addStyle } from 'simon-js-tool'
+
 export interface TypeComponent {
   Text: (type?: string) => VNode
   Email: () => VNode
@@ -13,7 +15,7 @@ export interface TypeComponent {
   Enumeration: () => VNode
   switch: () => VNode
   Boolean: () => VNode
-  radio: (type?: string) => VNode
+  Radio: (type?: string) => VNode
   checkbox: (type?: string) => VNode
   checkboxButton: () => VNode
   radioButton: () => VNode
@@ -40,6 +42,8 @@ export const jsonSchemaTransformForm = defineComponent({
     const model = reactive<Record<string, any>>({})
     const rules = reactive<FormRules>({})
     const formEl = ref<HTMLFormElement>()
+    let styles = ''
+    let remove: () => void
     watch(props, () => {
       schema.value = props.schema
     })
@@ -73,7 +77,7 @@ export const jsonSchemaTransformForm = defineComponent({
     function renderForm(form: Record<string, any>) {
       const formList: VNode[] = []
       for (const key in form) {
-        const { default: value, key: _key, type, name, regExp, errMsg, required, class: className, position, style, description, show, maxlength, minlength, options, values, min, max, disabled, disables, border, precision, step, debounce = 300, placeholder, children } = form[key]
+        const { default: value, key: _key, type, colorTitle, name, regExp, errMsg, required, class: className, position, style, description, show, maxlength, minlength, options, values, min, max, disabled, disables, border, precision, step, debounce = 300, placeholder, children } = form[key]
         watchEffect(() => judgeShow(), {
           flush: 'post',
         })
@@ -146,7 +150,7 @@ export const jsonSchemaTransformForm = defineComponent({
             disabled,
             'onUpdate:modelValue': modelValue,
           }),
-          radio: (type = 'radio') => h(ElRadioGroup, {
+          Radio: (type = 'radio') => h(ElRadioGroup, {
             'modelValue': model[key],
             'class': className,
             style,
@@ -169,7 +173,7 @@ export const jsonSchemaTransformForm = defineComponent({
               : ElCheckboxButton, { label: values?.[i] || item, disabled: disables?.[i], border }, { default: () => item })),
           }),
           checkboxButton: () => typeComponent.checkbox('checkboxButton'),
-          radioButton: () => typeComponent.radio('radioButton'),
+          radioButton: () => typeComponent.Radio('radioButton'),
           cascader: () => h(ElCascader, {
             'modelValue': model[key] || [],
             'class': className,
@@ -184,6 +188,11 @@ export const jsonSchemaTransformForm = defineComponent({
         }
         if (!type)
           throw new Error(`type is required in ${form}`)
+        styles += `
+          .json_${type + _key} .el-form-item__label{
+            color:${colorTitle};
+          }
+          `
         const formItem = h(ElFormItem, {
           label: name,
           prop: key,
@@ -231,6 +240,9 @@ export const jsonSchemaTransformForm = defineComponent({
       return formList
     }
     function wrapper(data: any[]) {
+      if (remove)
+        remove?.()
+      remove = addStyle(styles)
       const g1 = transformData(data.filter((item: any) => item.props.position.startsWith('0-')).sort(sortIndex))
       const g2 = transformData(data.filter((item: any) => item.props.position.startsWith('1-')).sort(sortIndex))
       const g3 = transformData(data.filter((item: any) => item.props.position.startsWith('2-')).sort(sortIndex))

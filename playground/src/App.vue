@@ -4,16 +4,19 @@ const data = ref<Record<string, any>>({
   description: 'xxx',
   name: '123',
 })
-const formEl = ref(null)
-const name = ref('')
+const formEl = ref<{ transformToJson: () => Record<string, any> }>()
+const json = ref()
 function transform() {
-  data.value = formEl.value?.transformToJson()
+  data.value = formEl.value!.transformToJson()
+}
+function toJson() {
+  console.log(json.value.getFormData())
 }
 </script>
 
 <template>
   <main font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
-    <Form ref="formEl" :name="name" :data="data" />
+    <Form ref="formEl" :data="data" />
     <Drag :data="data" />
     <div m-5>
       <el-button @click="transform">
@@ -21,7 +24,13 @@ function transform() {
       </el-button>
     </div>
     <div w-200 border-1 border-gray m-5 ma p-2>
-      <jsonSchemaTransformForm :schema="data" />
+      <jsonSchemaTransformForm ref="json" :schema="data" />
+    </div>
+
+    <div m-t-5>
+      <el-button @click="toJson">
+        To Json
+      </el-button>
     </div>
     <Footer />
   </main>

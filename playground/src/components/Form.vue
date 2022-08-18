@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{ name: String; data: Record<string, any> }>()
+const props = defineProps<{ name?: String; data: Record<string, any> }>()
 watch(props, () => {
   restoreData()
 })
@@ -34,6 +34,7 @@ const required = ref(false)
 const textarea = ref('')
 const errMsg = ref('')
 const description = ref('')
+const colorTitle = ref('')
 const key = ref(0)
 interface Icontrollers {
   relevancy: string
@@ -72,6 +73,7 @@ function confirm() {
     show: r.length ? r : null,
     key: ++key.value,
     position: `0-${key.value - 1}`,
+    colorTitle: colorTitle.value,
   }
   if (type.value === 'add') { tableData.value = [...tableData.value, data] }
   else {
@@ -108,6 +110,7 @@ function transformToJson() {
 function resetData() {
   cardShow.value = true
   cardType.value = ''
+  colorTitle.value = ''
   input.value = ''
   min.value = false
   max.value = false
@@ -131,6 +134,7 @@ function editHandler(row: any) {
   errMsg.value = row.errMsg
   placeholder.value = row.placeholder
   description.value = row.description
+  colorTitle.value = row.colorTitle
   if (row.min) {
     min.value = true
     minvalue.value = row.min
@@ -152,7 +156,7 @@ function getAllname() {
 function deleteHandler(row: any) {
   tableData.value = tableData.value.filter(item => item.name !== row.name)
 }
-const types = ['Text', 'Email', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Media', 'Boolean', 'Relation']
+const types = ['Text', 'Radio', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Media', 'Boolean', 'Relation']
 function handleClose(done: () => void) {
   resetData()
   done()
@@ -206,19 +210,23 @@ defineExpose({
         <el-tabs v-model="activeName" class="demo-tabs">
           <el-tab-pane label="Basic settings" name="first">
             <div v-show="cardType">
-              <div flex="~ gap-5">
-                <el-form-item label="Name:" class="w-45%">
+              <div flex="~ gap-5 wrap">
+                <el-form-item label="Name:" class="w-30%">
                   <el-input v-model="input" placeholder="Please input Name" />
                 </el-form-item>
-                <el-form-item label="Placeholder:" class="w-45%">
+                <el-form-item label="Placeholder:" class="w-30%">
                   <el-input v-model="placeholder" placeholder="Please input Placeholder" />
                 </el-form-item>
-                <el-form-item label="Description:" class="w-45%">
+                <el-form-item label="Description:" class="w-30%">
                   <el-input v-model="description" placeholder="Please input Description" />
+                </el-form-item>
+                <el-form-item label="TitleColor:" class="w-30%">
+                  <el-color-picker v-model="colorTitle" />
                 </el-form-item>
               </div>
               <el-input
-                v-show="cardType === 'Enumeration'" v-model="textarea" :rows="5" type="textarea" placeholder="Ex:
+                v-show="cardType === 'Enumeration' || cardType === 'Radio'" v-model="textarea" :rows="5"
+                type="textarea" placeholder="Ex:
 morning
 noon
 evening"
