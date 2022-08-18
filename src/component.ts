@@ -26,7 +26,6 @@ export interface TypeComponent {
 
 export interface Schema {
   size?: 'small' | 'large' | 'default'
-  order?: string[]
   name?: string
   description?: string
   form: Record<string, any>
