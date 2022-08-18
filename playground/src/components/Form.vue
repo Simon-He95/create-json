@@ -33,6 +33,14 @@ const size = ref('default')
 const sizeOptions = ['large', 'default', 'small']
 const buttonType = ref<string[]>([])
 const limit = ref(1)
+const cascaderType = ref(false)
+const showType = ['Radio', 'RadioButton', 'Checkbox', 'CheckboxButton']
+const jsonTemp = JSON.stringify({
+  options: [],
+}, undefined, 2)
+const json = ref(jsonTemp)
+const nameEl = ref()
+
 interface Icontrollers {
   relevancy: string
   controlType: string
@@ -48,6 +56,7 @@ function choose(e: any) {
       buttonType.value = ['Checkbox', 'CheckboxButton']
     if (cardType.value === 'Radio')
       buttonType.value = ['Radio', 'RadioButton']
+    nameEl.value.focus()
   }
   catch (error) {
   }
@@ -69,6 +78,7 @@ function confirm() {
   const max = maxvalue.value === 0 ? null : maxvalue.value
   const data = {
     id: input.value,
+    json: JSON.parse(json.value),
     placeholder: placeholder.value,
     description: description.value,
     name: input.value,
@@ -77,6 +87,7 @@ function confirm() {
     default: defaultvalue.value || null,
     min,
     max,
+    cascaderType: cascaderType.value,
     required: required.value,
     regExp: regExp.value || null,
     options: t.length ? t : null,
@@ -123,6 +134,8 @@ function resetData() {
   cardShow.value = true
   cardType.value = ''
   textarea.value = ''
+  cascaderType.value = false
+  json.value = jsonTemp
   size.value = 'default'
   colorTitle.value = ''
   input.value = ''
@@ -143,9 +156,11 @@ function editHandler(row: any) {
   if (row.type === 'Radio')
     buttonType.value = ['Radio', 'RadioButton']
   controllers.value = row.show || [{ relevancy: '', controlType: '', controlReg: '' }]
+  json.value = JSON.stringify(row.json, undefined, 2)
   type.value = 'edit'
   limit.value = row.limit
   current.value = input.value = row.name
+  cascaderType.value = row.cascaderType
   cardShow.value = false
   cardType.value = row.type
   defaultvalue.value = row.default
@@ -166,6 +181,7 @@ function editHandler(row: any) {
   required.value = row.required
   activeName.value = 'first'
   dialogVisible.value = true
+  nameEl.value.focus()
 }
 function getAllname() {
   return tableData.value.reduce((result, item) => {
@@ -176,7 +192,7 @@ function getAllname() {
 function deleteHandler(row: any) {
   tableData.value = tableData.value.filter(item => item.name !== row.name)
 }
-const types = ['Text', 'Radio', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Boolean', 'Checkbox', 'Upload', 'Relation']
+const types = ['Text', 'Radio', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Boolean', 'Checkbox', 'Upload', 'Cascader', 'Relation']
 function handleClose(done: () => void) {
   resetData()
   done()
@@ -201,8 +217,6 @@ function restoreData() {
 if (props.data)
   restoreData()
 
-const showType = ['Radio', 'RadioButton', 'Checkbox', 'CheckboxButton']
-
 defineExpose({
   transformToJson,
 })
@@ -218,6 +232,7 @@ defineExpose({
         save
       </el-button>
     </div>
+
     <el-dialog v-model="dialogVisible" title="Type" width="50%" :before-close="handleClose">
       <div v-show="cardShow" flex="~ gap-2" w-full flex-wrap @click="choose">
         <el-card v-for="i in types" :key="i" shadow="hover" class="w-49%" :type="i">
@@ -234,7 +249,7 @@ defineExpose({
             <div v-show="cardType">
               <div flex="~ gap-5 wrap">
                 <el-form-item label="Name:" class="w-30%">
-                  <el-input v-model="input" placeholder="Please input Name" />
+                  <el-input ref="nameEl" v-model="input" placeholder="Please input Name" />
                 </el-form-item>
                 <el-form-item label="Placeholder:" class="w-30%">
                   <el-input v-model="placeholder" placeholder="Please input Placeholder" />
@@ -255,10 +270,16 @@ defineExpose({
                     <el-option v-for="item in buttonType" :key="item" :label="item" :value="item" />
                   </el-select>
                 </el-form-item>
+                <el-checkbox v-model="cascaderType" label="Multiple" class="w-30%" />
                 <el-form-item v-show="cardType === 'Upload'" label="Limit:" class="w-30%">
                   <el-input-number v-model="limit" :min="1" :max="10" controls-position="right" />
                 </el-form-item>
               </div>
+              <JsonEditorVue
+                v-if="cardType === 'Cascader'" v-model="json" class="editor_vue" mode="text"
+                :main-menu-bar="false"
+              />
+
               <el-input
                 v-show="cardType === 'Enumeration' || showType.includes(cardType)" v-model="textarea" :rows="5"
                 type="textarea" placeholder="Ex:
@@ -370,17 +391,25 @@ evening"
   </div>
 </template>
 
-<style scoped>
-:deep(.demo-tabs .el-tabs__nav) {
+<style>
+.demo-tabs .el-tabs__nav {
   float: right !important;
 }
 
-:deep(.demo-tabs .el-form-item__content) {
+.demo-tabs .el-form-item__content {
   width: 100%;
   align-items: flex-start;
 }
 
-:deep(.el-form-item__content .el-select) {
+.el-form-item__content .el-select {
+  width: 100%;
+}
+
+.editor_vue .cm-line {
+  text-align: left;
+}
+
+.el-form-item__content .el-cascader {
   width: 100%;
 }
 </style>

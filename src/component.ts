@@ -78,10 +78,11 @@ export const jsonSchemaTransformForm = defineComponent({
     function renderForm(form: Record<string, any>) {
       const formList: VNode[] = []
       for (const key in form) {
-        const { default: value, key: _key, type, size, limit = 1, colorTitle, name, regExp, errMsg, required, class: className, position, style, description, show, maxlength, minlength, options, values, min, max, disabled, disables, border, precision, step, debounce = 300, placeholder, children } = form[key]
+        const { default: value, key: _key, type, size, limit = 1, cascaderType, colorTitle, json, name, regExp, errMsg, required, class: className, position, style, description, show, maxlength, minlength, options, values, min, max, disabled, disables, border, precision, step, debounce = 300, placeholder, children } = form[key]
         watchEffect(() => judgeShow(), {
           flush: 'post',
         })
+        console.log(cascaderType)
         if (value !== undefined)
           model[key] = value || ''
         if (regExp) {
@@ -161,31 +162,33 @@ export const jsonSchemaTransformForm = defineComponent({
               ? ElRadio
               : ElRadioButton, { label: values?.[i] || item, disabled: disables?.[i], border }, { default: () => item })),
           }),
-          Checkbox: (type = 'checkbox') => {
-            return h(ElCheckboxGroup, {
-              'modelValue': model[key] || (model[key] = []),
-              'class': className,
-              style,
-              disabled,
-              'onUpdate:modelValue': modelValue,
-            }, {
-              default: () => (options || []).map((item: any, i: number) => h(type === 'checkbox'
-                ? ElCheckbox
-                : ElCheckboxButton, { label: values?.[i] || item, disabled: disables?.[i], border }, { default: () => item })),
-            })
-          },
+          Checkbox: (type = 'checkbox') => h(ElCheckboxGroup, {
+            'modelValue': model[key] || (model[key] = []),
+            'class': className,
+            style,
+            disabled,
+            'onUpdate:modelValue': modelValue,
+          }, {
+            default: () => (options || []).map((item: any, i: number) => h(type === 'checkbox'
+              ? ElCheckbox
+              : ElCheckboxButton, { label: values?.[i] || item, disabled: disables?.[i], border }, { default: () => item })),
+          }),
           CheckboxButton: () => typeComponent.Checkbox('checkboxButton'),
           RadioButton: () => typeComponent.Radio('radioButton'),
           Cascader: () => h(ElCascader, {
             'modelValue': model[key] || (model[key] = []),
             'class': className,
-            options,
+            'options': json?.options || [],
             debounce,
             style,
             disabled,
+            'props': {
+              multiple: cascaderType,
+            },
             placeholder,
             'filterable': true,
             'onUpdate:modelValue': modelValue,
+            'collapse-tags-tooltip': true,
           }),
           Upload: () => h(ElUpload, {
             'fileList': model[key] || (model[key] = []),

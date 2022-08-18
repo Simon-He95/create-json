@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import routes from 'virtual:generated-pages'
 import ElementPlus from 'element-plus'
-import mavonEditor from 'mavon-editor'
+import JsonEditorVue from 'json-editor-vue'
 import { jsonSchemaTransformForm } from '../../src/component'
 import App from './App.vue'
 import 'mavon-editor/dist/css/index.css'
@@ -17,7 +17,8 @@ const router = createRouter({
   routes,
 })
 app.component('JsonSchemaTransformForm', jsonSchemaTransformForm)
-app.use(mavonEditor)
+app.component('JsonEditorVue', JsonEditorVue)
+
 app.use(ElementPlus)
 app.use(router)
 app.mount('#app')
