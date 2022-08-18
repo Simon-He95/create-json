@@ -12,14 +12,7 @@ function add() {
   dialogVisible.value = true
 }
 const cardType = ref('')
-function choose(e: any) {
-  try {
-    cardType.value = e.target.parentNode.attributes.type.nodeValue
-    cardShow.value = false
-  }
-  catch (error) {
-  }
-}
+
 const input = ref('')
 const placeholder = ref('')
 const activeName = ref('first')
@@ -36,12 +29,28 @@ const errMsg = ref('')
 const description = ref('')
 const colorTitle = ref('')
 const key = ref(0)
+const size = ref('default')
+const sizeOptions = ['large', 'default', 'small']
+const buttonType = ref<string[]>([])
 interface Icontrollers {
   relevancy: string
   controlType: string
   controlReg: string
 }
 const controllers = ref<Icontrollers[]>([{ relevancy: '', controlType: '', controlReg: '' }])
+
+function choose(e: any) {
+  try {
+    cardType.value = e.target.parentNode.attributes.type.nodeValue
+    cardShow.value = false
+    if (cardType.value === 'Checkbox')
+      buttonType.value = ['Checkbox', 'CheckboxButton']
+    if (cardType.value === 'Radio')
+      buttonType.value = ['Radio', 'RadioButton']
+  }
+  catch (error) {
+  }
+}
 function confirm() {
   if (current.value !== input.value && getAllname().includes(input.value)) {
     alert('该字段名已存在')
@@ -74,6 +83,7 @@ function confirm() {
     key: ++key.value,
     position: `0-${key.value - 1}`,
     colorTitle: colorTitle.value,
+    size: size.value,
   }
   if (type.value === 'add') { tableData.value = [...tableData.value, data] }
   else {
@@ -110,6 +120,8 @@ function transformToJson() {
 function resetData() {
   cardShow.value = true
   cardType.value = ''
+  textarea.value = ''
+  size.value = 'default'
   colorTitle.value = ''
   input.value = ''
   min.value = false
@@ -123,7 +135,10 @@ function resetData() {
   controllers.value = [{ relevancy: '', controlType: '', controlReg: '' }]
 }
 function editHandler(row: any) {
-  console.log(row.controllers)
+  if (row.type === 'Checkbox')
+    buttonType.value = ['Checkbox', 'CheckboxButton']
+  if (row.type === 'Radio')
+    buttonType.value = ['Radio', 'RadioButton']
   controllers.value = row.show || [{ relevancy: '', controlType: '', controlReg: '' }]
   type.value = 'edit'
   current.value = input.value = row.name
@@ -135,6 +150,7 @@ function editHandler(row: any) {
   placeholder.value = row.placeholder
   description.value = row.description
   colorTitle.value = row.colorTitle
+  size.value = row.size
   if (row.min) {
     min.value = true
     minvalue.value = row.min
@@ -156,7 +172,7 @@ function getAllname() {
 function deleteHandler(row: any) {
   tableData.value = tableData.value.filter(item => item.name !== row.name)
 }
-const types = ['Text', 'Radio', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Media', 'Boolean', 'Relation']
+const types = ['Text', 'Radio', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Boolean', 'Checkbox', 'Relation']
 function handleClose(done: () => void) {
   resetData()
   done()
@@ -180,6 +196,8 @@ function restoreData() {
 }
 if (props.data)
   restoreData()
+
+const showType = ['Radio', 'RadioButton', 'Checkbox', 'CheckboxButton']
 
 defineExpose({
   transformToJson,
@@ -223,9 +241,19 @@ defineExpose({
                 <el-form-item label="TitleColor:" class="w-30%">
                   <el-color-picker v-model="colorTitle" />
                 </el-form-item>
+                <el-form-item label="Size:" class="w-30%">
+                  <el-select v-model="size" placeholder="Pick Size">
+                    <el-option v-for="item in sizeOptions" :key="item" :label="item" :value="item" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item v-show="showType.includes(cardType)" label="Type:" class="w-30%">
+                  <el-select v-model="cardType" placeholder="Pick Size">
+                    <el-option v-for="item in buttonType" :key="item" :label="item" :value="item" />
+                  </el-select>
+                </el-form-item>
               </div>
               <el-input
-                v-show="cardType === 'Enumeration' || cardType === 'Radio'" v-model="textarea" :rows="5"
+                v-show="cardType === 'Enumeration' || showType.includes(cardType)" v-model="textarea" :rows="5"
                 type="textarea" placeholder="Ex:
 morning
 noon

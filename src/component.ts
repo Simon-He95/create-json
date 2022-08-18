@@ -16,10 +16,10 @@ export interface TypeComponent {
   switch: () => VNode
   Boolean: () => VNode
   Radio: (type?: string) => VNode
-  checkbox: (type?: string) => VNode
-  checkboxButton: () => VNode
-  radioButton: () => VNode
-  cascader: () => VNode
+  Checkbox: (type?: string) => VNode
+  CheckboxButton: () => VNode
+  RadioButton: () => VNode
+  Cascader: () => VNode
 }
 
 export interface Schema {
@@ -77,7 +77,7 @@ export const jsonSchemaTransformForm = defineComponent({
     function renderForm(form: Record<string, any>) {
       const formList: VNode[] = []
       for (const key in form) {
-        const { default: value, key: _key, type, colorTitle, name, regExp, errMsg, required, class: className, position, style, description, show, maxlength, minlength, options, values, min, max, disabled, disables, border, precision, step, debounce = 300, placeholder, children } = form[key]
+        const { default: value, key: _key, type, size, colorTitle, name, regExp, errMsg, required, class: className, position, style, description, show, maxlength, minlength, options, values, min, max, disabled, disables, border, precision, step, debounce = 300, placeholder, children } = form[key]
         watchEffect(() => judgeShow(), {
           flush: 'post',
         })
@@ -116,7 +116,7 @@ export const jsonSchemaTransformForm = defineComponent({
             'onUpdate:modelValue': modelValue,
           }),
           Number: () => h(ElInputNumber, {
-            'modelValue': model[key] || 0,
+            'modelValue': model[key] || (model[key] = 0),
             'class': className,
             style,
             disabled,
@@ -127,7 +127,7 @@ export const jsonSchemaTransformForm = defineComponent({
             'onUpdate:modelValue': modelValue,
           }),
           switch: () => h(ElSwitch, {
-            'modelValue': model[key] || 0,
+            'modelValue': model[key] || (model[key] = 0),
             'class': className,
             style,
             disabled,
@@ -144,7 +144,7 @@ export const jsonSchemaTransformForm = defineComponent({
           { default: () => (options || []).map((item: any, i: number) => h(ElOption, { value: values?.[i] || i, label: item })) },
           ),
           Boolean: () => h(ElSwitch, {
-            'modelValue': model[key] || 0,
+            'modelValue': model[key] || (model[key] = 0),
             'class': className,
             style,
             disabled,
@@ -161,21 +161,23 @@ export const jsonSchemaTransformForm = defineComponent({
               ? ElRadio
               : ElRadioButton, { label: values?.[i] || item, disabled: disables?.[i], border }, { default: () => item })),
           }),
-          checkbox: (type = 'checkbox') => h(ElCheckboxGroup, {
-            'modelValue': model[key] || [],
-            'class': className,
-            style,
-            disabled,
-            'onUpdate:modelValue': modelValue,
-          }, {
-            default: () => (form[key]?.options || []).map((item: any, i: number) => h(type === 'checkbox'
-              ? ElCheckbox
-              : ElCheckboxButton, { label: values?.[i] || item, disabled: disables?.[i], border }, { default: () => item })),
-          }),
-          checkboxButton: () => typeComponent.checkbox('checkboxButton'),
-          radioButton: () => typeComponent.Radio('radioButton'),
-          cascader: () => h(ElCascader, {
-            'modelValue': model[key] || [],
+          Checkbox: (type = 'checkbox') => {
+            return h(ElCheckboxGroup, {
+              'modelValue': model[key] || (model[key] = []),
+              'class': className,
+              style,
+              disabled,
+              'onUpdate:modelValue': modelValue,
+            }, {
+              default: () => (options || []).map((item: any, i: number) => h(type === 'checkbox'
+                ? ElCheckbox
+                : ElCheckboxButton, { label: values?.[i] || item, disabled: disables?.[i], border }, { default: () => item })),
+            })
+          },
+          CheckboxButton: () => typeComponent.Checkbox('checkboxButton'),
+          RadioButton: () => typeComponent.Radio('radioButton'),
+          Cascader: () => h(ElCascader, {
+            'modelValue': model[key] || (model[key] = []),
             'class': className,
             options,
             debounce,
@@ -199,6 +201,7 @@ export const jsonSchemaTransformForm = defineComponent({
           required: !!required,
           class: `json_${type + _key}`,
           position,
+          size,
         }, {
           default: () => [h('div', {
             class: ' w-full text-1 lh-4 text-gray-600:50 mb-1',
