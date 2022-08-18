@@ -2,7 +2,8 @@
 import type { DefineComponent, VNode } from 'vue'
 import { defineComponent, h, reactive, ref, watch, watchEffect } from 'vue'
 import type { FormRules } from 'element-plus'
-import { ElCascader, ElCheckbox, ElCheckboxButton, ElCheckboxGroup, ElCol, ElDatePicker, ElForm, ElFormItem, ElInput, ElInputNumber, ElOption, ElRadio, ElRadioButton, ElRadioGroup, ElRow, ElSelect, ElSwitch } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
+import { ElCascader, ElCheckbox, ElCheckboxButton, ElCheckboxGroup, ElCol, ElDatePicker, ElForm, ElFormItem, ElIcon, ElInput, ElInputNumber, ElOption, ElRadio, ElRadioButton, ElRadioGroup, ElRow, ElSelect, ElSwitch, ElUpload } from 'element-plus'
 import { addStyle } from 'simon-js-tool'
 
 export interface TypeComponent {
@@ -20,6 +21,7 @@ export interface TypeComponent {
   CheckboxButton: () => VNode
   RadioButton: () => VNode
   Cascader: () => VNode
+  Upload: () => VNode
 }
 
 export interface Schema {
@@ -42,7 +44,7 @@ export const jsonSchemaTransformForm = defineComponent({
     const model = reactive<Record<string, any>>({})
     const rules = reactive<FormRules>({})
     const formEl = ref<HTMLFormElement>()
-    let styles = ''
+    const styles = ref('')
     let remove: () => void
     watch(props, () => {
       schema.value = props.schema
@@ -77,7 +79,7 @@ export const jsonSchemaTransformForm = defineComponent({
     function renderForm(form: Record<string, any>) {
       const formList: VNode[] = []
       for (const key in form) {
-        const { default: value, key: _key, type, size, colorTitle, name, regExp, errMsg, required, class: className, position, style, description, show, maxlength, minlength, options, values, min, max, disabled, disables, border, precision, step, debounce = 300, placeholder, children } = form[key]
+        const { default: value, key: _key, type, size, limit = 1, colorTitle, name, regExp, errMsg, required, class: className, position, style, description, show, maxlength, minlength, options, values, min, max, disabled, disables, border, precision, step, debounce = 300, placeholder, children } = form[key]
         watchEffect(() => judgeShow(), {
           flush: 'post',
         })
@@ -85,7 +87,6 @@ export const jsonSchemaTransformForm = defineComponent({
           model[key] = value || ''
         if (regExp) {
           const reg = new RegExp(regExp)
-          console.log(reg)
           rules[key] = [{
             validator: (o, value, callback) => {
               if (!reg.test(value))
@@ -187,14 +188,34 @@ export const jsonSchemaTransformForm = defineComponent({
             'filterable': true,
             'onUpdate:modelValue': modelValue,
           }),
+          Upload: () => h(ElUpload, {
+            'fileList': model[key] || (model[key] = []),
+            'class': className,
+            'listType': 'picture-card',
+            'action': '#',
+            'autoUpload': false,
+            limit,
+            style,
+            disabled,
+            'onChange': uploadChange,
+            'onRemove': removeFile,
+            placeholder,
+            'onUpdate:modelValue': modelValue,
+          }, {
+            default: () => {
+              return h(ElIcon, null, { default: () => h(Plus) })
+            },
+          }),
         }
         if (!type)
           throw new Error(`type is required in ${form}`)
-        styles += `
+        if (colorTitle) {
+          styles.value += `
           .json_${type + _key} .el-form-item__label{
             color:${colorTitle};
           }
           `
+        }
         const formItem = h(ElFormItem, {
           label: name,
           prop: key,
@@ -211,7 +232,12 @@ export const jsonSchemaTransformForm = defineComponent({
         formList.push(formItem)
         if (children)
           formList.push(...renderForm(children))
-
+        function uploadChange(data: any) {
+          model[key].push(data)
+        }
+        function removeFile(data: any) {
+          model[key].splice(data, 1)
+        }
         function modelValue(val: any) {
           model[key] = val
         }
@@ -245,7 +271,7 @@ export const jsonSchemaTransformForm = defineComponent({
     function wrapper(data: any[]) {
       if (remove)
         remove?.()
-      remove = addStyle(styles)
+      remove = addStyle(styles.value)
       const g1 = transformData(data.filter((item: any) => item.props.position.startsWith('0-')).sort(sortIndex))
       const g2 = transformData(data.filter((item: any) => item.props.position.startsWith('1-')).sort(sortIndex))
       const g3 = transformData(data.filter((item: any) => item.props.position.startsWith('2-')).sort(sortIndex))

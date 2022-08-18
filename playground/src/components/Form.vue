@@ -32,6 +32,7 @@ const key = ref(0)
 const size = ref('default')
 const sizeOptions = ['large', 'default', 'small']
 const buttonType = ref<string[]>([])
+const limit = ref(1)
 interface Icontrollers {
   relevancy: string
   controlType: string
@@ -84,6 +85,7 @@ function confirm() {
     position: `0-${key.value - 1}`,
     colorTitle: colorTitle.value,
     size: size.value,
+    limit: limit.value,
   }
   if (type.value === 'add') { tableData.value = [...tableData.value, data] }
   else {
@@ -125,6 +127,7 @@ function resetData() {
   colorTitle.value = ''
   input.value = ''
   min.value = false
+  limit.value = 1
   max.value = false
   required.value = false
   minvalue.value = 0
@@ -141,6 +144,7 @@ function editHandler(row: any) {
     buttonType.value = ['Radio', 'RadioButton']
   controllers.value = row.show || [{ relevancy: '', controlType: '', controlReg: '' }]
   type.value = 'edit'
+  limit.value = row.limit
   current.value = input.value = row.name
   cardShow.value = false
   cardType.value = row.type
@@ -172,7 +176,7 @@ function getAllname() {
 function deleteHandler(row: any) {
   tableData.value = tableData.value.filter(item => item.name !== row.name)
 }
-const types = ['Text', 'Radio', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Boolean', 'Checkbox', 'Relation']
+const types = ['Text', 'Radio', 'RichText', 'Date', 'Enumeration', 'Password', 'Number', 'Boolean', 'Checkbox', 'Upload', 'Relation']
 function handleClose(done: () => void) {
   resetData()
   done()
@@ -215,8 +219,8 @@ defineExpose({
       </el-button>
     </div>
     <el-dialog v-model="dialogVisible" title="Type" width="50%" :before-close="handleClose">
-      <div v-show="cardShow" flex="~ gap-2" w-full flex-wrap justify-center @click="choose">
-        <el-card v-for="i in types" :key="i" shadow="hover" class="w-45%" :type="i">
+      <div v-show="cardShow" flex="~ gap-2" w-full flex-wrap @click="choose">
+        <el-card v-for="i in types" :key="i" shadow="hover" class="w-49%" :type="i">
           {{ i }}
         </el-card>
       </div>
@@ -250,6 +254,9 @@ defineExpose({
                   <el-select v-model="cardType" placeholder="Pick Size">
                     <el-option v-for="item in buttonType" :key="item" :label="item" :value="item" />
                   </el-select>
+                </el-form-item>
+                <el-form-item v-show="cardType === 'Upload'" label="Limit:" class="w-30%">
+                  <el-input-number v-model="limit" :min="1" :max="10" controls-position="right" />
                 </el-form-item>
               </div>
               <el-input
