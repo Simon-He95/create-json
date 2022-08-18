@@ -15,12 +15,12 @@ function transform() {
   <main font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
     <Form ref="formEl" :name="name" :data="data" />
     <Drag :data="data" />
-    <div>
+    <div m-5>
       <el-button @click="transform">
         transform json to form
       </el-button>
     </div>
-    <div w-200>
+    <div w-200 border-1 border-gray m-5 ma p-2>
       <jsonSchemaTransformForm :schema="data" />
     </div>
     <Footer />

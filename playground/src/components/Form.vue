@@ -13,8 +13,12 @@ function add() {
 }
 const cardType = ref('')
 function choose(e: any) {
-  cardShow.value = false
-  cardType.value = e.target.parentNode.attributes.type.nodeValue
+  try {
+    cardType.value = e.target.parentNode.attributes.type.nodeValue
+    cardShow.value = false
+  }
+  catch (error) {
+  }
 }
 const input = ref('')
 const placeholder = ref('')
@@ -58,6 +62,7 @@ function confirm() {
     description: description.value,
     name: input.value,
     type: cardType.value,
+    errMsg: errMsg.value,
     default: defaultvalue.value || null,
     min,
     max,
@@ -115,6 +120,8 @@ function resetData() {
   controllers.value = [{ relevancy: '', controlType: '', controlReg: '' }]
 }
 function editHandler(row: any) {
+  console.log(row.controllers)
+  controllers.value = row.show || [{ relevancy: '', controlType: '', controlReg: '' }]
   type.value = 'edit'
   current.value = input.value = row.name
   cardShow.value = false
@@ -226,7 +233,7 @@ evening"
               <el-form-item label="RegExp pattern" flex-col items-start class="w-50%">
                 <el-input v-model="regExp" />
               </el-form-item>
-              <el-form-item label="Error message" flex-col items-start class="w-50%">
+              <el-form-item v-show="regExp" label="Error message" flex-col items-start class="w-50%">
                 <el-input v-model="errMsg" />
               </el-form-item>
             </div>
@@ -265,25 +272,25 @@ evening"
                     />
                   </svg>
                 </div>
-                <el-form-item label="Controller" flex-col items-start class="w-45%">
-                  <el-select
-                    v-model="item.relevancy" placeholder="Select" size="large" clearable
-                    @change="selectChange"
-                  >
-                    <el-option
-                      v-for="i in tableData.filter(item => item.name !== input)" :key="i.name" :label="i.name"
-                      :value="i.name"
-                    />
-                  </el-select>
-                </el-form-item>
-                <div v-show="item.relevancy" class="w-45%">
-                  <el-form-item label="Control show" flex-col items-start>
-                    <el-select v-model="item.controlType" placeholder="Select" size="large">
+                <div flex="~ gap-2" w-full>
+                  <el-form-item label="Controller" flex-col items-start class="w-45%">
+                    <el-select v-model="item.relevancy" placeholder="Select" clearable @change="selectChange">
+                      <el-option
+                        v-for="i in tableData.filter(item => item.name !== input)" :key="i.name"
+                        :label="i.name" :value="i.name"
+                      />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item v-show="item.relevancy" label="Control show" flex-col items-start class="w-45%">
+                    <el-select v-model="item.controlType" placeholder="Select">
                       <el-option v-for="i in controlTypes" :key="i" :label="i" :value="i" />
                     </el-select>
                   </el-form-item>
-                  <el-form-item v-show="item.controlType === 'regExp'" label="regExp" flex-col items-start>
-                    <el-input v-model="item.controlReg" />
+                  <el-form-item
+                    v-show="item.controlType === 'regExp'" label="regExp" flex-col items-start
+                    class="w-45%"
+                  >
+                    <el-input v-model="item.controlReg" input-style="h-full" />
                   </el-form-item>
                 </div>
               </div>

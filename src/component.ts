@@ -81,6 +81,7 @@ export const jsonSchemaTransformForm = defineComponent({
           model[key] = value || ''
         if (regExp) {
           const reg = new RegExp(regExp)
+          console.log(reg)
           rules[key] = [{
             validator: (o, value, callback) => {
               if (!reg.test(value))
@@ -230,17 +231,20 @@ export const jsonSchemaTransformForm = defineComponent({
       return formList
     }
     function wrapper(data: any[]) {
-      const g1 = data.filter((item: any) => item.props.position.startsWith('0-')).sort(sortIndex)
-      const g2 = data.filter((item: any) => item.props.position.startsWith('1-')).sort(sortIndex)
-      const g3 = data.filter((item: any) => item.props.position.startsWith('2-')).sort(sortIndex)
+      const g1 = transformData(data.filter((item: any) => item.props.position.startsWith('0-')).sort(sortIndex))
+      const g2 = transformData(data.filter((item: any) => item.props.position.startsWith('1-')).sort(sortIndex))
+      const g3 = transformData(data.filter((item: any) => item.props.position.startsWith('2-')).sort(sortIndex))
       const max = Math.max(g1.length, g2.length, g3.length)
       const result = []
       for (let i = 0; i < max; i++) {
         const col: any[] = []
-        const level = (g1[i] ? 1 : 0) + (g2[i] ? 1 : 0) + (g3[i] ? 1 : 0)
-        g1[i] && col.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g1[i] }))
-        g2[i] && col.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g2[i] }))
-        g3[i] && col.push(h(ElCol, { span: level === 3 ? 6 : level === 2 ? 12 : 24 }, { default: () => g3[i] }))
+        const l_1 = (g1[i]?.props && g1[i].props.label) ? 1 : 0
+        const l_2 = (g2[i]?.props && g2[i].props.label) ? 1 : 0
+        const l_3 = (g3[i]?.props && g3[i].props.label) ? 1 : 0
+        const level = l_1 + l_2 + l_3
+        l_1 && col.push(h(ElCol, { span: level === 3 ? 8 : level === 2 ? 12 : 24 }, { default: () => g1[i] }))
+        l_2 && col.push(h(ElCol, { span: level === 3 ? 8 : level === 2 ? 12 : 24 }, { default: () => g2[i] }))
+        l_3 && col.push(h(ElCol, { span: level === 3 ? 8 : level === 2 ? 12 : 24 }, { default: () => g3[i] }))
         result.push(h(ElRow, { gutter: 10 }, {
           default: () => col,
         }))
@@ -250,6 +254,20 @@ export const jsonSchemaTransformForm = defineComponent({
         if (!b)
           return -1
         return a.props.position.split('-')[1] - b.props.position.split('-')[1]
+      }
+      function transformData(data: any[]) {
+        if (!data.length)
+          return []
+        const [col, n] = data[0]?.props.position?.split('-')
+        if (+n === 0)
+          return data
+        for (let i = +n - 1; i >= 0; i--) {
+          data.unshift({
+            name: '',
+            id: `${col}-${n}`,
+          })
+        }
+        return data
       }
     }
   },
