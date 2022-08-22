@@ -7,12 +7,21 @@ import Pages from 'vite-plugin-pages'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Unocss from 'unocss/vite'
+import { name } from './package.json'
 
 export default defineConfig({
   base: './',
   resolve: {
     alias: {
       '~/': `${path.resolve(__dirname, 'src')}/`,
+    },
+  },
+  build: {
+    target: 'esnext',
+    lib: {
+      name: `${name}-[name]`,
+      entry: path.resolve(__dirname, 'src/main.ts'),
+      formats: ['umd'],
     },
   },
   plugins: [

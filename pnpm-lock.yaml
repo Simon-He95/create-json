@@ -13,6 +13,7 @@ importers:
       eslint: ^8.16.0
       eslint-plugin-n: ^15.2.1
       json-editor-vue: ^0.4.13
+      json-schema-transform-form: ^0.0.8
       pkgroll: ^1.3.1
       simon-js-tool: ^4.0.31
       typescript: ^4.7.2
@@ -24,6 +25,7 @@ importers:
       '@vueuse/core': 8.6.0_vue@3.2.36
       element-plus: 2.2.13_vue@3.2.36
       json-editor-vue: 0.4.13_vue@3.2.36
+      json-schema-transform-form: 0.0.8
       simon-js-tool: 4.0.31
       vue: 3.2.36
       vuedraggable: 4.1.0_vue@3.2.36
@@ -3638,6 +3640,17 @@ packages:
   /json-parse-even-better-errors/2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
     dev: true
+
+  /json-schema-transform-form/0.0.8:
+    resolution: {integrity: sha512-07C67EQfWx3IP+41kdArrGJMIw3Q53kvszUS6ErB8FFa9Pc+la46Nm7gFJWrj6+vNIl/Mnkh38biBjwRxgN6Wg==}
+    dependencies:
+      '@vueuse/core': 8.9.4_vue@3.2.36
+      element-plus: 2.2.13_vue@3.2.36
+      simon-js-tool: 4.0.31
+      vue: 3.2.36
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+    dev: false
 
   /json-schema-traverse/0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}

@@ -48,6 +48,7 @@
     "@vueuse/core": "^8.1.1",
     "element-plus": "^2.2.13",
     "json-editor-vue": "^0.4.13",
+    "json-schema-transform-form": "^0.0.8",
     "simon-js-tool": "^4.0.31",
     "vue": "^3.2.36",
     "vuedraggable": "^4.1.0"

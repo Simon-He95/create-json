@@ -10,7 +10,7 @@
 <body class="font-sans dark:text-white dark:bg-hex-121212">
   <div id="app"></div>
   <script>
-    (function() {
+    (function () {
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
       const setting = localStorage.getItem('color-schema') || 'auto'
       if (setting === 'dark' || (prefersDark && setting !== 'light'))
@@ -18,5 +18,6 @@
     })()
   </script>
   <script type="module" src="/src/main.ts"></script>
+  <!-- <script type="module" src="./dist/playground.umd.js"></script> -->
 </body>
 </html>

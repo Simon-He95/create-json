@@ -31,7 +31,7 @@ function transformData(data: any[]) {
     return data
   for (let i = +n - 1; i >= 0; i--) {
     data.unshift({
-      name: '',
+      label: '',
       id: `${col}-${n}`,
     })
   }
@@ -44,26 +44,20 @@ watch(list1, () => {
   const lis3 = list3.value.length - 1
   const max = Math.max(lis1, lis2, lis3)
   for (let i = 0; i < max - lis2 - 1; i++) {
-    const id = `${list1.value[i].id}empty`
-    list2.value.push({ name: '', id })
+    const id = `${list1.value[i]?.id}empty`
+    list2.value.push({ label: '', id })
   }
   for (let i = 0; i < max - lis3 - 1; i++) {
-    const id = `${list1.value[i].id}empty-1`
-    list3.value.push({ name: '', id })
+    const id = `${list1.value[i]?.id}empty-1`
+    list3.value.push({ label: '', id })
   }
 }, { immediate: true })
 
 function save1() {
-  addPosition(list1.value, 0)
-  addPosition(list2.value, 1)
-  addPosition(list3.value, 2)
+  [list1.value, list2.value, list3.value].forEach((list, i) => addPosition(list, i))
 }
 function addPosition(list: any[], key: number) {
-  list.forEach((item, idx) => {
-    if (!item.name)
-      return
-    item.position = `${key}-${idx}`
-  })
+  list.forEach((item, idx) => item.label && (item.position = `${key}-${idx}`))
 }
 </script>
 
@@ -73,25 +67,25 @@ function addPosition(list: any[], key: number) {
       save
     </el-button>
     <div flex="~ gap-1" border-1 border-black border-rd-1 w-200 ma>
-      <draggable class="list-group" :list="list1" group="people" item-key="name">
+      <draggable class="list-group" :list="list1" group="people" item-key="label">
         <template #item="{ element }">
-          <div class="list-group-item" h-10 :class="element.name ? 'border-1' : ''" border-gray border-rd-1 m-2 lh-10>
-            {{ element.name }}
+          <div class="list-group-item" h-10 :class="element.label ? 'border-1' : ''" border-gray border-rd-1 m-2 lh-10>
+            {{ element.label }}
           </div>
         </template>
       </draggable>
 
-      <draggable class="list-group" :list="list2" group="people" item-key="name">
+      <draggable class="list-group" :list="list2" group="people" item-key="label">
         <template #item="{ element }">
-          <div class="list-group-item" h-10 :class="element.name ? 'border-1' : ''" border-gray border-rd-1 m-2 lh-10>
-            {{ element.name }}
+          <div class="list-group-item" h-10 :class="element.label ? 'border-1' : ''" border-gray border-rd-1 m-2 lh-10>
+            {{ element.label }}
           </div>
         </template>
       </draggable>
-      <draggable class="list-group" :list="list3" group="people" item-key="name">
+      <draggable class="list-group" :list="list3" group="people" item-key="label">
         <template #item="{ element }">
-          <div class="list-group-item" h-10 :class="element.name ? 'border-1' : ''" border-gray border-rd-1 m-2 lh-10>
-            {{ element.name }}
+          <div class="list-group-item" h-10 :class="element.label ? 'border-1' : ''" border-gray border-rd-1 m-2 lh-10>
+            {{ element.label }}
           </div>
         </template>
       </draggable>
