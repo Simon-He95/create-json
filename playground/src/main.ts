@@ -12,9 +12,10 @@ import './styles/main.css'
 import 'uno.css'
 
 let instance: any
+console.log('~~!@!simon')
 const router = createRouter({
   history: createWebHistory(
-    window.__POWERED_BY_QIANKUN__ ? '/app-vue/' : import.meta.env.BASE_URL,
+    window.__POWERED_BY_QIANKUN__ ? '/pro/anteater' : import.meta.env.BASE_URL,
   ),
   routes,
 })
@@ -29,6 +30,7 @@ declare global {
 }
 
 function render(props: IRenderProps) {
+  console.log('render props:', props)
   const { container } = props
   instance = createApp(App)
   instance
@@ -43,6 +45,7 @@ function render(props: IRenderProps) {
     )
 }
 
+console.log('flag:', window.__POWERED_BY_QIANKUN__)
 if (!window.__POWERED_BY_QIANKUN__) { render({ container: '#app' }) }
 else {
   createApp(App)
@@ -58,11 +61,14 @@ export async function bootstrap() {
 }
 
 export async function mount(props: any) {
-  console.log('mount subapp')
   render(props)
+  console.log('mount subapp', instance)
 }
 
 export async function unmount() {
-  console.log('unmount college app')
-  instance.unmount()
+  instance.unmountSelf()
+}
+
+export async function update() {
+  console.log('update props')
 }

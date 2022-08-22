@@ -1,16 +1,35 @@
 /// <reference types="vitest" />
 
 import path from 'path'
+import fs from 'fs'
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import Pages from 'vite-plugin-pages'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Unocss from 'unocss/vite'
-import { name } from './package.json'
-
+import html from '@rollup/plugin-html'
+import qiankun from 'vite-plugin-qiankun'
+const name = 'anteater-dev'
+const myPlugin = (template_url: string) => {
+  let content: string
+  let outDir: string
+  return {
+    name: 'copy-html',
+    apply: 'build',
+    enforce: 'post',
+    config(options: any) {
+      content = fs.readFileSync(path.resolve(__dirname, template_url), 'utf-8')
+      outDir = `${options.build?.outDir || 'dist'}/index.html`
+    },
+    buildEnd() {
+      setTimeout(() => fs.writeFileSync(path.resolve(__dirname, outDir), content, 'utf-8'))
+    },
+  }
+}
 export default defineConfig({
-  base: './',
+  base: '/',
+  // publicPath: '/apps/' + name,
   resolve: {
     alias: {
       '~/': `${path.resolve(__dirname, 'src')}/`,
@@ -19,12 +38,18 @@ export default defineConfig({
   build: {
     target: 'esnext',
     lib: {
-      name: `${name}-[name]`,
+      fileName: name,
+      name,
       entry: path.resolve(__dirname, 'src/main.ts'),
-      formats: ['umd'],
     },
+    cssTarget: 'esnext',
+  },
+  define: {
+    'process.env': {},
   },
   plugins: [
+    qiankun('anteater', { useDevMode: false }),
+    myPlugin('./template.html'),
     Vue({
       reactivityTransform: true,
     }),

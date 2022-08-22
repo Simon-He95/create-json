@@ -3,10 +3,10 @@
   "private": true,
   "packageManager": "pnpm@6.32.3",
   "scripts": {
-    "build": "vite build",
+    "build": "vite build ",
     "dev": "vite --port 7017 --open",
     "typecheck": "vue-tsc --noEmit",
-    "preview": "vite preview",
+    "preview": "vite preview --port 7017",
     "test": "vitest"
   },
   "dependencies": {
