@@ -8,8 +8,6 @@ import Pages from 'vite-plugin-pages'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Unocss from 'unocss/vite'
-import html from '@rollup/plugin-html'
-import qiankun from 'vite-plugin-qiankun'
 const name = 'anteater-dev'
 const myPlugin = (template_url: string) => {
   let content: string
@@ -48,7 +46,6 @@ export default defineConfig({
     'process.env': {},
   },
   plugins: [
-    qiankun('anteater', { useDevMode: false }),
     myPlugin('./template.html'),
     Vue({
       reactivityTransform: true,
