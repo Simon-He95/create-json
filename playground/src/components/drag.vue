@@ -25,7 +25,7 @@ function update() {
 
 function transformData(data: any[]) {
   if (!data.length)
-    return []
+    return data
   const [col, n] = data[0]?.position?.split('-')
   if (+n === 0)
     return data
