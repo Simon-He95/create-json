@@ -1,50 +1,51 @@
 <script setup lang="ts">
-const name = $ref('')
-
-const router = useRouter()
-const go = () => {
-  if (name)
-    router.push(`/hi/${encodeURIComponent(name)}`)
+const data = ref<Record<string, any>>({
+  attribs: {},
+  description: 'xxx',
+  name: '123',
+})
+const formEl = ref<{ transformToJson: () => Record<string, any> }>()
+const json = ref()
+function transform() {
+  data.value = formEl.value!.transformToJson()
+}
+function toJson() {
+  console.log(json.value.getFormData())
 }
 </script>
 
 <template>
-  <div>
-    <div i-carbon-campsite text-4xl inline-block />
-    <p>
-      <a rel="noreferrer" href="https://github.com/Simon-He95/vitesse-lite" target="_blank">
-        Vitesse Lite
-      </a>
-    </p>
-    <p>
-      <em text-sm op75>Opinionated Vite Starter Template</em>
-    </p>
+  <div font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
+    <Form ref="formEl" :data="data" />
+    <Drag :data="data" />
+    <div m-5>
+      <el-button @click="transform">
+        transform json to form
+      </el-button>
+    </div>
+    <div w-200 border-1 border-gray m-5 ma p-2>
+      <jsonSchemaTransformForm ref="json" :schema="data" />
+    </div>
 
-    <div py-4 />
-
-    <input
-      id="input"
-      v-model="name"
-      placeholder="What's your name?"
-      type="text"
-      autocomplete="false"
-      p="x-4 y-2"
-      w="250px"
-      text="center"
-      bg="transparent"
-      border="~ rounded gray-200 dark:gray-700"
-      outline="none active:none"
-      @keydown.enter="go"
-    >
-
-    <div>
-      <button
-        class="m-3 text-sm btn"
-        :disabled="!name"
-        @click="go"
-      >
-        Go
-      </button>
+    <div m-t-5>
+      <el-button @click="toJson">
+        To Json
+      </el-button>
     </div>
   </div>
 </template>
+
+<style scoped>
+:deep(.demo-tabs .el-tabs__nav) {
+  float: right !important;
+}
+
+:deep(.demo-tabs .el-form-item__content) {
+  width: 100%;
+  align-items: flex-start;
+}
+
+:deep(.el-form-item__content .el-select) {
+  width: 100%;
+}
+</style>

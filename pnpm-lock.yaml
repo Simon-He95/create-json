@@ -17,7 +17,7 @@ importers:
       json-editor-vue: ^0.4.13
       json-schema-transform-form: ^0.0.8
       pkgroll: ^1.3.1
-      simon-js-tool: ^4.0.32
+      simon-js-tool: ^4.0.35
       typescript: ^4.7.2
       vite: ^3.0.2
       vite-plugin-qiankun: ^1.0.15
@@ -41,7 +41,7 @@ importers:
       eslint: 8.16.0
       eslint-plugin-n: 15.2.1_eslint@8.16.0
       pkgroll: 1.3.1_typescript@4.7.2
-      simon-js-tool: 4.0.32
+      simon-js-tool: 4.0.35
       typescript: 4.7.2
       vite: 3.0.2
       vite-plugin-qiankun: 1.0.15_wwfdgdbqczdq2fpmue2wpgz5bm
@@ -67,7 +67,7 @@ importers:
       vite-plugin-pages: ^0.22.0
       vitest: ^0.7.0
       vue: ^3.2.31
-      vue-router: ^4.0.14
+      vue-router: ^4.0.8
       vue-tsc: ^0.33.2
     dependencies:
       '@vueuse/core': 8.6.0_vue@3.2.36
@@ -3778,7 +3778,7 @@ packages:
     dependencies:
       '@vueuse/core': 8.9.4_vue@3.2.36
       element-plus: 2.2.13_vue@3.2.36
-      simon-js-tool: 4.0.32
+      simon-js-tool: 4.0.35
       vue: 3.2.36
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -4672,8 +4672,8 @@ packages:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
     dev: true
 
-  /simon-js-tool/4.0.32:
-    resolution: {integrity: sha512-WDp7Zk+sCuCyHBwjosHcSG1fq/0npdZXT0M6v7ESCi5ACbGCKtxijLa939hCsMJetsagqyh0lwCs5L12vo7yBg==}
+  /simon-js-tool/4.0.35:
+    resolution: {integrity: sha512-k2hfmCNQ6XtKu8JYQe2VfCbvYU0TzoqMJS6MLUftXRhh4tLp9jt0lUF7gf88LwTmgd5G08LkHtszvizA9dK6xg==}
     dependencies:
       '@vueuse/core': 8.9.4_vue@3.2.36
       htmlparser2: 8.0.1

@@ -1,10 +1,10 @@
 import { createApp } from 'vue'
+import type { Router, RouterHistory } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
-import routes from 'virtual:generated-pages'
 import ElementPlus from 'element-plus'
 import JsonEditorVue from 'json-editor-vue'
-// import { jsonSchemaTransformForm } from '../../src/component'
 import { jsonSchemaTransformForm } from 'json-schema-transform-form'
+// import { jsonSchemaTransformForm } from '../../src/component'
 import App from './App.vue'
 import 'element-plus/dist/index.css'
 import '@unocss/reset/tailwind.css'
@@ -12,13 +12,15 @@ import './styles/main.css'
 import 'uno.css'
 
 let instance: any
-console.log('~~!@!simon')
-const router = createRouter({
-  history: createWebHistory(
-    window.__POWERED_BY_QIANKUN__ ? '/pro/anteater' : import.meta.env.BASE_URL,
-  ),
-  routes,
-})
+const routes = [
+  {
+    path: '/pro/anteater',
+    component: () => import('./App.vue'),
+    children: [
+      { path: 'works/index', meta: { permission: 'anteater' }, component: () => import('./pages/index.vue') },
+    ],
+  },
+]
 
 interface IRenderProps {
   container: Element | string
@@ -28,47 +30,44 @@ declare global {
     __POWERED_BY_QIANKUN__?: string
   }
 }
+const history = createWebHistory((window as any).__POWERED_BY_QIANKUN__ ? '/' : '/') as RouterHistory
+
+const router = createRouter({
+  history,
+  routes,
+}) as Router
 
 function render(props: IRenderProps) {
-  console.log('render props:', props)
   const { container } = props
   instance = createApp(App)
-  instance
     .use(ElementPlus)
     .use(router)
     .component('JsonSchemaTransformForm', jsonSchemaTransformForm)
     .component('JsonEditorVue', JsonEditorVue)
-    .mount(
-      container instanceof Element
-        ? (container.querySelector('#app') as Element)
-        : (container as string),
-    )
+    .mount(typeof (container) === 'string' ? container : (container.querySelector('#app') as Element))
 }
 
-console.log('flag:', window.__POWERED_BY_QIANKUN__)
-if (!window.__POWERED_BY_QIANKUN__) { render({ container: '#app' }) }
-else {
-  createApp(App)
-    .component('JsonSchemaTransformForm', jsonSchemaTransformForm)
-    .component('JsonEditorVue', JsonEditorVue)
-    .use(ElementPlus)
-    .use(router)
-    .mount('#app')
-}
+if (!window.__POWERED_BY_QIANKUN__)
+  render({ container: '#app' })
+
 // 暴露主应用生命周期钩子
 export async function bootstrap() {
-  console.log('subapp bootstraped')
+  console.log('%c ', 'color: green;', 'vue3.0 app bootstraped')
 }
 
 export async function mount(props: any) {
+  console.log('mount subapp', props)
   render(props)
-  console.log('mount subapp', instance)
 }
 
 export async function unmount() {
-  instance.unmountSelf()
+  instance.unmount()
+  if (instance._container)
+    instance._container.innerHTML = ''
+  history.destroy()
 }
 
 export async function update() {
   console.log('update props')
 }
+
